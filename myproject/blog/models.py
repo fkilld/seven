@@ -20,7 +20,7 @@ class Category(models.Model):  # define a Category model to group blog posts
         return reverse('category_detail', kwargs={'pk': self.pk})  # build URL using the category's primary key
         
         
-class Profile(models.model):
+class Profile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,related_name='profile')
     bio = models.TextField(max_length=500,blank=True)
     location = models.CharField(max_length=500,blank=True)
@@ -86,7 +86,7 @@ class BlogLike(models.Model):
     
 
     class Meta:
-        unique_together = ['slug','user']
+        unique_together = ['blog','user']
 
 
     def __str__(self):
