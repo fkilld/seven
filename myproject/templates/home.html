@@ -2,3 +2,18 @@
 
 {% block title %}Home  blog page{% endblock title %}
 
+{% block content %}
+<div>
+    <form method='get'>
+        {% comment %} <input type="text" name='search' placeholder ='search whatever you want' value="{{ search_query }}"> {% endcomment %}
+        <select name="category" >
+            <option value="">all categories</option>
+            {% for category in categories %}
+            <option value="{{category.id}}" {% if  selected_category == category.id|stringformat:'s' %} selected {% endif %} >
+                {{category.name}}
+            </option>
+            {% endfor %}
+        </select>
+        <button>submit</button>
+    </form>
+</div>{% endblock content %}

@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from .forms import *
 from .models import *
 from django.contrib import messages
@@ -35,10 +35,6 @@ def home(request):
     paginator =Paginator(blogs,5)
     page_number  = request.GET.get('page')
     page_obj =  paginator.get_page(page_number)
-    
-
-    
-
     context = {
         'page_obj': page_obj,
         'categories': categories,
@@ -215,3 +211,73 @@ def profile(request):
         user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileForm(instance=request.user.profile)
         
+        
+#   path('profile/<int:pk>',views.profile,name='profile'),
+def profile_detail(request,pk):
+    user = get_object_or_404(User,pk=pk)
+    blogs =user.blog_posts.filter(is_published=True)
+    context = {
+        'profile': user,'blogs':blogs
+    }
+    return render(request, 'accounts/profile_detail.html', context)
+
+@login_required
+def add_comment(request, blog_id):
+    blog = get_object_or_404(Blog, id=blog_id)    
+    parent_comment = None   
+    if request.method == 'POST':        
+        form = CommentForm(request.POST)        
+        parent_id = request.POST.get('parent_id')  
+        print(parent_id)
+        if parent_id:            
+            parent_comment = get_object_or_404(Comment, id=parent_id)   
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.blog = blog
+            comment.author = request.user
+            comment.parent = parent_comment
+            comment.save()
+            messages.success(request, 'Comment added successfully!')
+    return redirect('blog_detail', pk=blog.pk)
+
+@login_required
+def toggle_like(request, blog_id):
+    blog = get_object_or_404(Blog, id=blog_id)
+    like_obj, created = BlogLike.objects.get_or_create(
+        user=request.user,
+        blog=blog
+    )
+
+    if not created:
+        like_obj.delete()
+        messages.info(request, 'Like removed!')
+    else:
+        messages.success(request, 'Blog liked!')
+
+    return redirect('blog_detail', pk=blog.pk)
+
+
+@login_required
+def my_blogs(request):
+    blogs = request.user.blog_posts.all()
+    paginator = Paginator(blogs, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj
+    }
+    return render(request, 'blog/my_blogs.html', context)
+
+
+
+class CategoryDetailView(DetailView):
+    model = Category
+    template_name = 'categories/detail.html'
+    context_object_name = 'category'
+    def get_context_data(self, **kwargs):
+        context =super().get_context_data(**kwargs)
+        category = self.get_object()
+        
+        context['blogs'] =category.posts.filter(is_published =True)
+        return context
