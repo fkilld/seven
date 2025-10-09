@@ -32,7 +32,7 @@ def home(request):
             category__id=category_filter
         )
         
-    paginator =Paginator(blogs,5)
+    paginator =Paginator(blogs,1)
     page_number  = request.GET.get('page')
     page_obj =  paginator.get_page(page_number)
     context = {
