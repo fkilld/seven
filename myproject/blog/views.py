@@ -25,8 +25,8 @@ def home(request):
         )
     
     
-    category_filter =request.GET.get('search')
-    print(category_filter)
+    category_filter =request.GET.get('category')
+    print(category_filter,'azad')
     if category_filter:
         blogs = blogs.filter(
             category__id=category_filter
