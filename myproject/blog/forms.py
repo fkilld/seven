@@ -13,6 +13,7 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = ('username', 'first_name','last_name','email','password1','password2')
     
+
     
     def save(self,commit=True):
         user = super().save(commit=False)
@@ -23,10 +24,21 @@ class CustomUserCreationForm(UserCreationForm):
             user.save()
         return user
     
+    
+    
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['bio','location','birth_date','avatar','website']
+        
+        widgets = {
+            # bio : forms.Textarea(attrs={'azad':'azad'})
+            'bio' : forms.Textarea(attrs={'rows':4}),
+            'birth_date' : forms.DateInput(attrs={'type':'date','idk':'azad'}),
+            'location' : forms.TextInput(attrs={'placeholder':'enter your location'}),
+            'avatar' :forms.ClearableFileInput(attrs={'accept':'image/'}),
+            'website' : forms.URLInput(attrs={'placeholder':'enter your web site'})
+        }
 class BlogForm(forms.ModelForm):
     class Meta:
         model = Blog
