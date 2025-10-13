@@ -1,24 +1,27 @@
-{% extends "base.html" %} {% block title %}{{blog.title}}{% endblock title %} 
-{%block content %}
+{% extends 'base.html' %}
 
-<h2>{{blog.title}}</h2>
+{% block title %}{{ blog.title }} - Django Blog{% endblock %}
 
-{% if blog.featured_image %}
-<img src="{{blog.featured_image.url}}" alt="{{blog.title}}" width="300" />
-{% endif %}
+{% block content %}
+<article>
+    <h2>{{ blog.title }}</h2>
 
-<div>
-  <p><strong> by: <a href="{% url "profile_detail" blog.author.pk %}">{{blog.author.username}}</a></strong></p>
-<p><strong>category:</strong>
-    {% if blog.category %}
-    <a href="{% url "category_detail" blog.category.pk %}">{{blog.category.name}}</a>
-    {%else%}
-    uncategorized
+    {% if blog.featured_image %}
+        <div class="featured-image">
+            <img src="{{ blog.featured_image.url }}" alt="{{ blog.title }}" width="500" style="max-width: 100%; height: auto;">
+        </div>
     {% endif %}
-</p>
 
-{% comment %}  {% endcomment %}
-  <p><strong>Published:</strong> {{ blog.created_at|date:"F d, Y G:i" }}</p>
+    <div class="blog-meta">
+        <p><strong>By:</strong> <a href="{% url 'profile_detail' blog.author.pk %}">{{ blog.author.username }}</a></p>
+        <p><strong>Category:</strong>
+            {% if blog.category %}
+                <a href="{% url 'category_detail' blog.category.pk %}">{{ blog.category.name }}</a>
+            {% else %}
+                Uncategorized
+            {% endif %}
+        </p>
+        <p><strong>Published:</strong> {{ blog.created_at|date:"F d, Y G:i" }}</p>
         {% if blog.updated_at != blog.created_at %}
             <p><strong>Last Updated:</strong> {{ blog.updated_at|date:"F d, Y G:i" }}</p>
         {% endif %}
@@ -31,7 +34,6 @@
             <p><strong>Tags:</strong>
                 {% for tag in blog.tags.all %}
                     <span>{{ tag.name }}</span>{% if not forloop.last %}, {% endif %}
-                    
                 {% endfor %}
             </p>
         </div>
@@ -109,5 +111,3 @@
     {% endfor %}
 </section>
 {% endblock %}
-
-

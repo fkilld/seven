@@ -1,31 +1,37 @@
-{% extends "base.html" %}
-{% block title %}{{profile_user.username}}{% endblock title %}
+{% extends 'base.html' %}
+
+{% block title %}{{ profile_user.username }}'s Profile - Django Blog{% endblock %}
 
 {% block content %}
-<h2>{{profile_user.username}}</h2>
-<div class='profile_info'>
-<p><strong>name: </strong> {{profile_user.first_name}} {{profile_user.last_name}}</p>
-<p><strong>username: </strong> {{profile_user.username}}</p>
-<p><strong>email: </strong> {{profile_user.email}}</p>
-<p><strong>joined: </strong> {{profile_user.date_joined|date:"F d, Y"}}</p>
+<h2>{{ profile_user.username }}'s Profile</h2>
 
-{% if profile_user.profile.bio %}
-<p><strong>bio: </strong> {{profile_user.profile.bio}}</p>
-{% endif %}
-{% if profile_user.profile.location %}
-<p><strong>location: </strong> {{profile_user.profile.location}}</p>
-{% endif %}
-{% if profile_user.profile.birth_date %}
-<p><strong>birth_date: </strong> {{profile_user.profile.birth_date}}</p>
-{% endif %}
-{% if profile_user.profile.website %}
-<p><strong>website: </strong> {{profile_user.profile.website}}</p>
-{% endif %}
-{% if profile_user.profile.avatar %}
-<p><strong>avatar: </strong> <img src="{{profile_user.profile.avatar.url}}" alt="avatar" width="150"></p>
-{% endif %}
+<div class="profile-info">
+    <p><strong>Name:</strong> {{ profile_user.first_name }} {{ profile_user.last_name }}</p>
+    <p><strong>Username:</strong> {{ profile_user.username }}</p>
+    <p><strong>Email:</strong> {{ profile_user.email }}</p>
+    <p><strong>Joined:</strong> {{ profile_user.date_joined|date:"F d, Y" }}</p>
+
+    {% if profile_user.profile.bio %}
+        <p><strong>Bio:</strong> {{ profile_user.profile.bio }}</p>
+    {% endif %}
+
+    {% if profile_user.profile.location %}
+        <p><strong>Location:</strong> {{ profile_user.profile.location }}</p>
+    {% endif %}
+
+    {% if profile_user.profile.birth_date %}
+        <p><strong>Birth Date:</strong> {{ profile_user.profile.birth_date|date:"F d, Y" }}</p>
+    {% endif %}
+
+    {% if profile_user.profile.website %}
+        <p><strong>Website:</strong> <a href="{{ profile_user.profile.website }}" target="_blank">{{ profile_user.profile.website }}</a></p>
+    {% endif %}
+
+    {% if profile_user.profile.avatar %}
+        <p><strong>Avatar:</strong></p>
+        <img src="{{ profile_user.profile.avatar.url }}" alt="Avatar" width="150" style="border-radius: 50%;">
+    {% endif %}
 </div>
-
 
 <h3>{{ profile_user.username }}'s Blog Posts</h3>
 
