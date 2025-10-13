@@ -85,7 +85,7 @@ class BlogDetailView(DetailView):
         blog.views +=1
         blog.save()
         
-        context['comment'] = blog.comments.filter(parent=None)
+        context['comments'] = blog.comments.filter(parent=None)
         context['comment_form'] = CommentForm()
         if self.request.user.is_authenticated:
             context['user_liked'] =BlogLike.objects.filter(
@@ -214,7 +214,9 @@ def profile(request):
         'user_form' : user_form,
         'profile_form' : profile_form,
     }
-    return render(request,'accounts/profile.html')
+    # print(user_form)
+    print(profile_form)
+    return render(request,'accounts/profile.html',context)
         
         
 #   path('profile/<int:pk>',views.profile,name='profile'),
@@ -222,7 +224,7 @@ def profile_detail(request,pk):
     user = get_object_or_404(User,pk=pk)
     blogs =user.blog_posts.filter(is_published=True)
     context = {
-        'profile': user,'blogs':blogs
+        'profile_user': user,'blogs':blogs
     }
     return render(request, 'accounts/profile_detail.html', context)
 

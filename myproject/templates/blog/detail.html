@@ -1,0 +1,113 @@
+{% extends "base.html" %} {% block title %}{{blog.title}}{% endblock title %} 
+{%block content %}
+
+<h2>{{blog.title}}</h2>
+
+{% if blog.featured_image %}
+<img src="{{blog.featured_image.url}}" alt="{{blog.title}}" width="300" />
+{% endif %}
+
+<div>
+  <p><strong> by: <a href="{% url "profile_detail" blog.author.pk %}">{{blog.author.username}}</a></strong></p>
+<p><strong>category:</strong>
+    {% if blog.category %}
+    <a href="{% url "category_detail" blog.category.pk %}">{{blog.category.name}}</a>
+    {%else%}
+    uncategorized
+    {% endif %}
+</p>
+
+{% comment %}  {% endcomment %}
+  <p><strong>Published:</strong> {{ blog.created_at|date:"F d, Y G:i" }}</p>
+        {% if blog.updated_at != blog.created_at %}
+            <p><strong>Last Updated:</strong> {{ blog.updated_at|date:"F d, Y G:i" }}</p>
+        {% endif %}
+        <p><strong>Views:</strong> {{ blog.views }}</p>
+        <p><strong>Likes:</strong> {{ likes_count }}</p>
+    </div>
+
+    {% if blog.tags.all %}
+        <div class="tags">
+            <p><strong>Tags:</strong>
+                {% for tag in blog.tags.all %}
+                    <span>{{ tag.name }}</span>{% if not forloop.last %}, {% endif %}
+                    
+                {% endfor %}
+            </p>
+        </div>
+    {% endif %}
+
+    <div class="blog-content">
+        {{ blog.content|linebreaks }}
+    </div>
+
+    {% if user.is_authenticated %}
+        <div class="blog-actions">
+            <form method="post" action="{% url 'toggle_like' blog.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">
+                    {% if user_liked %}Unlike{% else %}Like{% endif %}
+                </button>
+            </form>
+
+            {% if user == blog.author %}
+                <a href="{% url 'blog_update' blog.pk %}">Edit</a>
+                <a href="{% url 'blog_delete' blog.pk %}">Delete</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</article>
+
+<section class="comments">
+    <h3>Comments ({{ comments.count }})</h3>
+
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'add_comment' blog.id %}">
+            {% csrf_token %}
+            <div>
+                <label for="{{ comment_form.content.id_for_label }}">Add a comment:</label>
+                {{ comment_form.content }}
+            </div>
+            <button type="submit">Post Comment</button>
+        </form>
+        <hr>
+    {% else %}
+        <p><a href="{% url 'login' %}">Login</a> to post a comment.</p>
+    {% endif %}
+
+    {% for comment in comments %}
+        <div class="comment">
+            <p><strong>{{ comment.author.username }}</strong> - {{ comment.created_at|date:"F d, Y G:i" }}</p>
+            <p>{{ comment.content|linebreaks }}</p>
+
+            {% if comment.replies.all %}
+                <div class="replies">
+                    {% for reply in comment.replies.all %}
+                        <div class="reply">
+                            <p><strong>{{ reply.author.username }}</strong> - {{ reply.created_at|date:"F d, Y G:i" }}</p>
+                            <p>{{ reply.content|linebreaks }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'add_comment' blog.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                    <div>
+                        <label>Reply:</label>
+                        <textarea name="content" rows="3" cols="50" placeholder="Write your reply..."></textarea>
+                    </div>
+                    <button type="submit">Reply</button>
+                </form>
+            {% endif %}
+        </div>
+        <hr>
+    {% empty %}
+        <p>No comments yet. Be the first to comment!</p>
+    {% endfor %}
+</section>
+{% endblock %}
+
+
