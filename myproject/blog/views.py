@@ -8,6 +8,8 @@ from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView,DeleteView,DetailView,UpdateView,CreateView
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login as auth_login
 
 # Create your views here.
 
@@ -121,7 +123,8 @@ class BlogCreateView(LoginRequiredMixin,CreateView):
     template_name = 'blog/create.html'
     def form_valid(self,form):
         form.instance.author =  self.request.user
-        return super().form_valid(form)    
+        return super().form_valid(form)
+        
 # @login_required
 # def update_blog(request, pk):
 #     blog = get_object_or_404(Blog, pk=pk)
@@ -187,6 +190,7 @@ class CategoryListView(ListView):
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
+        # print(form.username.id_for_label)
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
@@ -195,6 +199,8 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request,'accounts/register.html',{'form':form})
+
+
 
 
 @login_required

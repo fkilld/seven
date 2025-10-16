@@ -7,8 +7,10 @@
 
 <form method="post">
     {% csrf_token %}
+    {% comment %} form = AuthenticationForm(request, data=request.POST) {% endcomment %}
     <div>
         <label for="{{ form.username.id_for_label }}">Username:</label>
+        
         {{ form.username }}
         {% if form.username.errors %}
             <ul class="errorlist">

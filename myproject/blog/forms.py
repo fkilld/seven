@@ -43,6 +43,7 @@ class BlogForm(forms.ModelForm):
     class Meta:
         model = Blog
         fields = ['title', 'slug', 'content', 'featured_image', 'category', 'tags', 'is_published']
+        
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
